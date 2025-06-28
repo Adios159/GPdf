@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.pyc
+.env
+venv/
+
+# Node.js
+node_modules/
+npm-debug.log
+
+# Chrome Extension
+chrome-extension/dist/
+
+# Downloads
+backend/downloads/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# FastAPI / Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Environment variables
+.venv
+env/
+env.bak/
+venv.bak/
+
+# Temporary files
+*.tmp
+*.temp
+!backend/downloads/.gitkeep 
