@@ -1,16 +1,17 @@
-from fastapi import APIRouter, File, UploadFile, HTTPException, Form
+from fastapi import APIRouter, File, UploadFile, HTTPException, Form, Depends
 from fastapi.responses import FileResponse
 import time
 import os
 from datetime import datetime
 
-from app.models.requests import ConvertRequest
-from app.models.responses import SummarizeResponse, ConvertResponse, UsageResponse, ErrorResponse
+from app.models.requests import ConvertRequest, PDFQARequest
+from app.models.responses import SummarizeResponse, ConvertResponse, UsageResponse, ErrorResponse, PDFQAResponse
 from app.core.pdf_processor import PDFProcessor
 from app.core.summarizer import GPTSummarizer
 from app.core.converter import DocumentConverter
 from app.core.rate_limiter import RateLimiter
 from app.config import settings
+from app.utils.openai_client import OpenAIClient
 
 router = APIRouter()
 
@@ -18,6 +19,7 @@ router = APIRouter()
 pdf_processor = PDFProcessor()
 summarizer = GPTSummarizer()
 rate_limiter = RateLimiter()
+openai_client = OpenAIClient()
 
 
 @router.post("/summarize", response_model=SummarizeResponse)
@@ -194,4 +196,30 @@ async def download_file(filename: str):
         path=file_path,
         filename=filename,
         media_type='application/octet-stream'
-    ) 
+    )
+
+
+@router.post("/qa", response_model=PDFQAResponse)
+async def ask_question(request: PDFQARequest):
+    """PDF 내용을 바탕으로 질문에 답변합니다."""
+    try:
+        # PDF 파일 내용 가져오기
+        pdf_text = pdf_processor.get_pdf_text(request.file_id)
+        if not pdf_text:
+            raise HTTPException(status_code=404, detail="PDF 파일을 찾을 수 없습니다.")
+        
+        # OpenAI API를 사용하여 질문에 답변
+        response = openai_client.create_pdf_qa(
+            question=request.question,
+            context=pdf_text
+        )
+        
+        # 응답 생성
+        answer = response.choices[0].message.content
+        return PDFQAResponse(
+            answer=answer,
+            context=pdf_text[:500] + "..." if len(pdf_text) > 500 else pdf_text
+        )
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e)) 

@@ -1,10 +1,11 @@
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 
-const API_BASE_URL = 'http://localhost:8000/api/v1';
+const API_BASE_URL_AXIOS = 'http://localhost:8000/api/v1';
 
 // API 클라이언트 설정
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: API_BASE_URL_AXIOS,
   timeout: 30000, // 30초 타임아웃
 });
 
@@ -64,7 +65,7 @@ export const checkUsage = async (sessionId) => {
 // 파일 다운로드
 export const downloadFile = (downloadUrl, filename) => {
   const link = document.createElement('a');
-  link.href = `${API_BASE_URL}${downloadUrl}`;
+  link.href = `${API_BASE_URL_AXIOS}${downloadUrl}`;
   link.download = filename;
   document.body.appendChild(link);
   link.click();
@@ -78,5 +79,29 @@ export const healthCheck = async () => {
     return response.data;
   } catch (error) {
     throw new Error('서버 연결에 실패했습니다.');
+  }
+};
+
+export const askQuestion = async (fileId, question) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/v1/pdf/qa`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        file_id: fileId,
+        question: question,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Q&A 요청 실패');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Q&A API 오류:', error);
+    throw error;
   }
 }; 

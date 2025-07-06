@@ -30,4 +30,10 @@ class ErrorResponse(BaseModel):
     """에러 응답 모델"""
     error: str = Field(..., description="에러 메시지")
     detail: Optional[str] = Field(None, description="상세 정보")
-    error_code: Optional[str] = Field(None, description="에러 코드") 
+    error_code: Optional[str] = Field(None, description="에러 코드")
+
+
+class PDFQAResponse(BaseModel):
+    """PDF Q&A 응답 모델"""
+    answer: str = Field(..., description="질문에 대한 답변")
+    context: str = Field(..., description="답변의 근거가 된 PDF 내용") 

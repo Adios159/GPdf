@@ -6,6 +6,8 @@ import DownloadOptions from '../components/DownloadOptions';
 import UsageLimit from '../components/UsageLimit';
 import { checkUsage, healthCheck } from '../services/api';
 import { getSessionId, setSessionId } from '../services/storage';
+import PDFQAChat from '../components/PDFQAChat';
+import './popup.css';
 
 const App = () => {
   const [sessionId, setCurrentSessionId] = useState(null);
@@ -14,6 +16,9 @@ const App = () => {
   const [summaryData, setSummaryData] = useState(null);
   const [error, setError] = useState(null);
   const [serverStatus, setServerStatus] = useState('checking'); // checking, online, offline
+  const [loading, setLoading] = useState(false);
+  const [summary, setSummary] = useState('');
+  const [fileId, setFileId] = useState('');
 
   // 초기화
   useEffect(() => {
@@ -54,22 +59,16 @@ const App = () => {
     setError(null);
   };
 
-  const handleUploadSuccess = async (data) => {
-    setSummaryData(data);
-    setCurrentStep('summary');
-    
-    // 사용량 정보 업데이트
-    try {
-      const updatedUsage = await checkUsage(sessionId);
-      setUsageInfo(updatedUsage);
-    } catch (error) {
-      console.error('사용량 업데이트 실패:', error);
-    }
+  const handleUploadSuccess = (data) => {
+    setSummary(data.summary);
+    setFileId(data.file_id);
+    setError('');
   };
 
-  const handleUploadError = (errorMessage) => {
-    setError(errorMessage);
-    setCurrentStep('upload');
+  const handleUploadError = (err) => {
+    setError(err.message);
+    setSummary('');
+    setFileId('');
   };
 
   const handleNewUpload = () => {
@@ -153,6 +152,7 @@ const App = () => {
             onUploadStart={handleUploadStart}
             onUploadSuccess={handleUploadSuccess}
             onUploadError={handleUploadError}
+            onUploadEnd={() => setLoading(false)}
             usageInfo={usageInfo}
           />
         )}
@@ -175,6 +175,8 @@ const App = () => {
             />
           </>
         )}
+
+        {fileId && <PDFQAChat fileId={fileId} />}
       </main>
       
       <footer className="app-footer">

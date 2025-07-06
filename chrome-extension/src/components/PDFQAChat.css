@@ -1,0 +1,64 @@
+.pdf-qa-chat {
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin: 15px 0;
+}
+
+.qa-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.qa-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.qa-submit {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.qa-submit:hover {
+  background-color: #0056b3;
+}
+
+.qa-submit:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.qa-error {
+  color: #dc3545;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.qa-answer {
+  background: white;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+}
+
+.qa-answer h4 {
+  margin: 0 0 10px 0;
+  color: #495057;
+}
+
+.qa-answer p {
+  margin: 0;
+  line-height: 1.5;
+  color: #212529;
+} 
